@@ -260,11 +260,11 @@ const ResourceEstimation = () => {
     );
   };
 
-  return (
+   return (
     <div className="flex flex-col md:flex-row h-screen">
       <Sidebar />
-      <div className="flex-1 p-4">
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
+      <div className="flex-1 p-4 overflow-y-auto">
+        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md mb-6">
           <h1 className="text-2xl font-bold mb-4">Resource Estimation</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input type="text" name="cropType" value={formData.cropType} onChange={handleInputChange} placeholder="Crop Type" className="p-2 border border-gray-300 rounded-md" />
@@ -272,29 +272,67 @@ const ResourceEstimation = () => {
             <input type="text" name="soilType" value={formData.soilType} onChange={handleInputChange} placeholder="Soil Type" className="p-2 border border-gray-300 rounded-md" />
             <input type="text" name="season" value={formData.season} onChange={handleInputChange} placeholder="Season" className="p-2 border border-gray-300 rounded-md" />
           </div>
-          <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded-md">
+          <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
             {loading ? 'Fetching...' : 'Get Resource Estimation'}
           </button>
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </form>
 
-        <div className="mt-6">
-          <div className="flex space-x-4">
-            <button onClick={() => setActiveTab('resources')} className={`p-2 ${activeTab === 'resources' ? 'bg-blue-500 text-white' : 'bg-gray-200'} rounded-md`}>
-              Resources
-            </button>
-            <button onClick={() => setActiveTab('diseases')} className={`p-2 ${activeTab === 'diseases' ? 'bg-blue-500 text-white' : 'bg-gray-200'} rounded-md`}>
-              Diseases
+        {(estimationResult.resources || estimationResult.diseases) && (
+          <div className="mb-6">
+            <div className="flex border-b border-gray-200">
+              <button
+                onClick={() => setActiveTab('resources')}
+                className={`py-2 px-4 font-medium text-sm focus:outline-none ${
+                  activeTab === 'resources'
+                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Resources
+              </button>
+              <button
+                onClick={() => setActiveTab('diseases')}
+                className={`py-2 px-4 font-medium text-sm focus:outline-none ${
+                  activeTab === 'diseases'
+                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Diseases
+              </button>
+            </div>
+            <div className="mt-4">
+              {activeTab === 'resources' && renderResourceEstimation()}
+              {activeTab === 'diseases' && renderDiseaseInformation()}
+            </div>
+          </div>
+        )}
+
+        {(estimationResult.resources || estimationResult.diseases) && (
+          <div className="bg-blue-500 p-4 rounded-lg shadow-md mb-6">
+            <h3 className="font-bold text-white text-lg mb-2">Language Options</h3>
+            <select
+              value={language}
+              onChange={handleLanguageChange}
+              className="p-2 border border-gray-300 rounded-md mr-2"
+            >
+              <option value="english">English</option>
+              <option value="hindi">Hindi</option>
+              {/* Add more language options as needed */}
+            </select>
+            <button
+              onClick={readAloud}
+              className="p-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+            >
+              Read Aloud
             </button>
           </div>
-          {activeTab === 'resources' && renderResourceEstimation()}
-          {activeTab === 'diseases' && renderDiseaseInformation()}
-        </div>
+        )}
       </div>
     </div>
   );
 };
-
 const ResourceCard = ({ icon, title, content }) => (
   <div className="bg-gray-100 p-4 rounded-md shadow-md flex items-center space-x-4">
     <div className="text-2xl">{icon}</div>
